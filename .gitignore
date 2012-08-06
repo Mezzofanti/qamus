@@ -1,0 +1,12 @@
+Makefile
+Makefile.Debug
+Makefile.Release
+*/Makefile
+*/Makefile.Debug
+*/Makefile.Release
+debug/*
+release/*
+*/*.qm
+test/moc/*
+test/obj/*
+
