@@ -11,7 +11,7 @@
 QtMsgType LogLevel;
 QString   LogFile;
 bool      LogToFile = false;
-bool      LogToStd  = true;
+bool      LogToConsole  = true;
 
 
 static void Logger(QtMsgType type, const char *msg)
@@ -24,25 +24,26 @@ static void Logger(QtMsgType type, const char *msg)
     QString text = QDateTime::currentDateTime().toString(Qt::ISODate) + " ";
     if (type == QtDebugMsg)
     {
-        text += QString("debug:    ");
+        text += QString("debug");
     }
     else if (type == QtWarningMsg)
     {
-        text += QString("warning:  ");
+        text += QString("warn.");
     }
     else if (type == QtCriticalMsg)
     {
-        text += QString("critical: ");
+        text += QString("crit.");
     }
     else if (type == QtFatalMsg)
     {
-        text += QString("fatal:    ");
+        text += QString("fatal");
     }
     else
     {
         return;
     }
 
+    text += ": ";
     text += msg;
 
     if (LogToFile && !LogFile.isEmpty())
@@ -52,7 +53,7 @@ static void Logger(QtMsgType type, const char *msg)
         QTextStream ts(&outFile);
         ts << text << endl;
     }
-    if (LogToStd)
+    if (LogToConsole)
     {
         if (type == QtDebugMsg || type == QtWarningMsg)
         {

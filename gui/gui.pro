@@ -9,6 +9,7 @@ SOURCES = *.cpp
 FORMS = *.ui
 
 INCLUDEPATH += ../lib
+DEPENDPATH *= $${INCLUDEPATH}
 LIBS += -L../lib/$${DESTDIR} -lqamus
 
 CODECFORTR = UTF-8

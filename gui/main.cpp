@@ -9,6 +9,9 @@
 #include "options.h"
 
 extern QtMsgType LogLevel;
+extern QString   LogFile;
+extern bool      LogToFile;
+extern bool      LogToConsole;
 
 int main(int argc, char* argv[])
 {
@@ -36,6 +39,10 @@ int main(int argc, char* argv[])
         LogLevel = QtDebugMsg;
         break;
     }
+    LogToConsole = options->getLogToConsole();
+    LogToFile = options->getLogToFile();
+    LogFile = options->getLogFilename();
+
     qInstallMsgHandler(Logger);
 
     QTranslator translator;
