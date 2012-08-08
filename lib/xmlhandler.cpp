@@ -5,7 +5,7 @@ XmlHandler::XmlHandler(): QXmlDefaultHandler() {}
 
 bool XmlHandler::fatalError(const QXmlParseException& e)
 {
-    qDebug() << "[" << __FILE__ << "] " << e.message() << " line:" << e.lineNumber() << " column:" << e.columnNumber();
+    qDebug() << e.message() << " line:" << e.lineNumber() << " column:" << e.columnNumber();
     return false;
 }
 
@@ -24,7 +24,7 @@ Transliterator* XmlHandler::createTransliterator(const QString& id, const QStrin
     if (U_FAILURE(status))
     {
         Q_ASSERT(transliterator == nullptr);
-        qDebug() << "[" << __FILE__ << "] Unable to load transliterator: " << u_errorName(status);
+        qWarning() << "unable to load transliterator: " << u_errorName(status);
     }
     else
     {

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>628</width>
-    <height>368</height>
+    <width>624</width>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,8 +72,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>628</width>
-     <height>23</height>
+     <width>624</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -118,6 +118,11 @@
    <widget class="QWidget" name="dockWidgetContents"/>
   </widget>
   <action name="action_Open">
+   <property name="icon">
+    <iconset>
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>

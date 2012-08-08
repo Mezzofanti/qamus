@@ -33,6 +33,11 @@ QString Entry::getTransliteration(const int col) const
     return _lexemes.at(col).getTransliteration();
 }
 
+size_t Entry::getLexemeCount() const
+{
+    return _lexemes.size();
+}
+
 void Entry::setLexeme(const int i, const Lexeme& lexeme)
 {
     _lexemes.at(i) = lexeme;
@@ -46,4 +51,13 @@ Lexeme& Entry::getLexeme(const int i)
 void Entry::setMetadata(const QString id, const QString data)
 {
     _metadata.insert(std::make_pair(id, data));
+}
+
+QString Entry::toString() const
+{
+    QString output;
+    for (auto it = _lexemes.begin(); it != _lexemes.end(); ++it)
+    {
+        output += (*it).get() + " ";
+    }
 }

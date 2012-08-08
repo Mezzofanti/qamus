@@ -87,7 +87,7 @@ void MainWindow::openLexicon()
                                                     tr("All Qamus lexicon files") + " (*." + QLX + ") ;; " +
                                                     tr("All XDXF files") + " (*." + XDXF + ") ;; " +
                                                     tr("All files") + " (*.*)");
-    qDebug() << "[" << __FILE__ << "] open: " + filename;
+    qDebug() << "open: " + filename;
     if (_qamusView.loadLexicon(filename))
     {
         _filename = filename;
@@ -134,7 +134,7 @@ void MainWindow::searchLexicon()
         ui->lexiconView->setModel(&_qamusProxy);
     }
 
-    qDebug("[%s] begin search: %s", __FILE__, term.toLocal8Bit().data());
+    qDebug() << "begin search: " << term.toLocal8Bit().data();
     _progressBar.setMaximum(_qamusView.rowCount());
     _progressBar.show();
     SearchWorker* thread = new SearchWorker(&_qamusView, col, term, this);
@@ -161,7 +161,7 @@ void MainWindow::updateProgress(const int percent)
 
 void MainWindow::searchFinished(SearchWorker* searchWorker)
 {
-    qDebug() << "[" << __FILE__ << "] search completed";
+    qDebug() << "search completed";
     _progressBar.hide();
     _qamusProxy.invalidate();
     delete searchWorker;

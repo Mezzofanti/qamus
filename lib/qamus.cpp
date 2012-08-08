@@ -140,12 +140,12 @@ bool Qamus::closeLexicon()
     return _lexicon.close();
 }
 
-qint64 Qamus::search(const int col, QString searchTerm)
+void Qamus::search(const int col, QString searchTerm)
 {
     _activeCache = nullptr;
     if (searchTerm.isEmpty())
     {
-        return 0;
+        return;
     }
 
 #ifdef ENABLE_ICU
@@ -164,7 +164,7 @@ qint64 Qamus::search(const int col, QString searchTerm)
         {
             _activeCache = searchCache;
             _activeCache->setActive(_lexicon.getRows());
-            return 0;
+            return;
         }
         else if (searchTerm.length() > searchCache->getRawTerm().length() &&
                 (searchTerm.startsWith(searchCache->getRawTerm()) || searchCache->getRawTerm().startsWith(searchTerm)))
@@ -189,7 +189,7 @@ qint64 Qamus::search(const int col, QString searchTerm)
     regex_t treRegexp;
     if (!composeRegExp(term, treRegexp))
     {
-        return 0;
+        return;
     }
 #endif
 
@@ -236,7 +236,10 @@ qint64 Qamus::search(const int col, QString searchTerm)
     }
 
     _activeCache->searchFinished();
+}
 
+qint64 Qamus::getSearchDuration() const
+{
     return _activeCache->getDuration();
 }
 

@@ -33,7 +33,8 @@ public:
 
     bool loadLexicon(const QString& filename);
     bool closeLexicon();
-    qint64 search(const int col, QString searchTerm);
+    void search(const int col, QString searchTerm);
+    qint64 getSearchDuration() const;
 
 #ifdef ENABLE_ICU
     QString transliterate(QString& term);

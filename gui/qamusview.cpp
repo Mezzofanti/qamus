@@ -128,11 +128,10 @@ bool QamusView::closeLexicon()
 
 void QamusView::startSearch(const int col, const QString &rawTerm)
 {
-    qint64 duration = _qamus.search(col, rawTerm);
-
-    if (_options->getVerbose())
+    _qamus.search(col, rawTerm);
+    if (_options->getLogToConsole())
     {
-        printf("search time: %lldms\n", duration);
+        qDebug() << "search time: " << _qamus.getSearchDuration();
     }
 }
 

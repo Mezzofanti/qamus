@@ -7,11 +7,14 @@ class Options
 {
 public:
     Options(const int argc, char* const argv[]);
-    bool getVerbose() const;
     long getVersion() const;
     bool getVersion(char const*& version) const;
     bool getICUVersion(char const*& version) const;
     bool getTREVersion(char const*& version) const;
+    bool getLogToFile() const;
+    bool getLogToConsole() const;
+    int  getLogLevel() const;
+    char* getLogFilename() const;
 
 private:
     void printUsage(FILE* stream, int exit_code);
@@ -20,7 +23,10 @@ private:
     std::string _browser;
     std::string _lexicon;
     std::string _rules;
-    bool _verbose;
+    bool  _logToFile;
+    bool  _logToConsole;
+    int   _loglevel;
+    char* _logfile;
 #ifdef ENABLE_ICU
     char _icuVersion[MAX_VERSION_STRING_LENGTH];
 #endif

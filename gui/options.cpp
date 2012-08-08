@@ -28,15 +28,12 @@ Options::Options(const int argc, char* const argv[])
 
     u_versionToString(versionArray, _icuVersion);
 #endif
-
-    _verbose = false;
     _browser.assign(getenv("BROWSER"));
+    _logToFile = false;
+    _logToConsole = true;
+    _loglevel = 2;
+    _logfile = nullptr;
     parseOptions(argc, argv);
-}
-
-bool Options::getVerbose() const
-{
-    return _verbose;
 }
 
 long Options::getVersion() const
@@ -74,15 +71,38 @@ bool Options::getTREVersion(char const*& version) const
 #endif
 }
 
+bool Options::getLogToFile() const
+{
+    return _logToFile;
+}
+
+bool Options::getLogToConsole() const
+{
+    return _logToConsole;
+}
+
+int Options::getLogLevel() const
+{
+    return _loglevel;
+}
+
+char* Options::getLogFilename() const
+{
+    return _logfile;
+}
+
 void Options::printUsage(FILE* stream, int exit_code)
 {
     fprintf(stream, "Usage:  %s options\n", "Qamus");
     fprintf(stream,
-            "  -h  --help             Display this usage information.\n"
-            "  -l  --lexicon filename Read lexicon from file.\n"
-            "  -r  --rules   filename Read rules from file.\n"
-            "  -v  --verbose          Print verbose messages.\n"
-            "  -V  --version          Print version.\n");
+            "  -h  --help               Display this usage information\n"
+            "  -l  --lexicon <filename> Read lexicon from file\n"
+            "  -r  --rules   <filename> Read rules from file\n"
+            "  -n  --log     <level>    Level to log at (0 to 3)\n"
+            "  -d  --logfile <filename> Log filename\n"
+            "  -q  --quiet              Do not print messages to the console\n"
+            "  -v  --verbose            Print messages to the console\n"
+            "  -V  --version            Print version information\n");
     exit(exit_code);
 }
 
@@ -124,7 +144,10 @@ void Options::parseOptions(const int argc, char* const argv[])
     {
         { "help",          no_argument, 0, 'h' },
         { "lexicon", required_argument, 0, 'l' },
-        { "rules",   required_argument, 0, 't' },
+        { "rules",   required_argument, 0, 'r' },
+        { "loglevel",required_argument, 0, 'n' },
+        { "logfile", required_argument, 0, 'd' },
+        { "quiet",         no_argument, 0, 'q' },
         { "verbose",       no_argument, 0, 'v' },
         { "version",       no_argument, 0, 'V' },
         {0, 0, 0, 0}
@@ -133,7 +156,7 @@ void Options::parseOptions(const int argc, char* const argv[])
     while (true)
     {
         int option_index = 0;
-        char c = getopt_long(argc, argv, "l:r:hvV", long_options, &option_index);
+        char c = getopt_long(argc, argv, "l:r:n:d:qhvV", long_options, &option_index);
 
         if (c == -1)
         {
@@ -153,8 +176,18 @@ void Options::parseOptions(const int argc, char* const argv[])
         case 'r':
             _rules.assign(optarg);
             break;
+        case 'n':
+            _loglevel = atoi(optarg);
+            break;
+        case 'd':
+            _logfile = optarg;
+            _logToFile = true;
+            break;
+        case 'q':
+            _logToConsole = false;
+            break;
         case 'v':
-            _verbose = true;
+            _logToConsole = true;
             break;
         case 'V':
             printVersion();

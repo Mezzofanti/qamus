@@ -12,7 +12,7 @@ public:
     ~Lexicon();
 
     void addLanguage(Language& language);
-    void addEntry(const Entry entry);
+    void addEntry(const Entry& entry);
 
     int getCols() const;
     int getRows() const;
@@ -24,7 +24,7 @@ public:
     const Language& getLanguage(const int col) const;
     QString getWord(const int col, const int row) const;
     Lexeme& getLexeme(const int col, const int row);
-    bool editLexeme(const int col, const int row, const QString word);
+    bool editLexeme(const int col, const int row, const QString& word);
     bool close();
     void applyTransliterations();
 

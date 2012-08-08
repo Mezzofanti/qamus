@@ -20,9 +20,11 @@ public:
     ~Entry();
     QString getWord(const int col) const;
     QString getTransliteration(const int col) const;
+    size_t getLexemeCount() const;
     void setLexeme(const int i, const Lexeme& lexeme);
     Lexeme& getLexeme(const int i);
     void setMetadata(const QString id, const QString data);
+    QString toString() const;
 
 private:
     std::vector<Lexeme> _lexemes;

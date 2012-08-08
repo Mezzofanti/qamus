@@ -66,7 +66,7 @@ Lexeme& Lexicon::getLexeme(const int col, const int row)
     return _entries.at(row).getLexeme(col);
 }
 
-bool Lexicon::editLexeme(const int col, const int row, const QString word)
+bool Lexicon::editLexeme(const int col, const int row, const QString& word)
 {
     if (col < (int)_languages.size() && row < (int)_entries.size())
     {
@@ -96,8 +96,14 @@ bool Lexicon::close()
     }
 }
 
-void Lexicon::addEntry(const Entry entry)
+void Lexicon::addEntry(const Entry& entry)
 {
+    if (_languages.size() != entry.getLexemeCount())
+    {
+        qWarning() << "unable to load entry: " << entry.toString();
+        return;
+    }
+
     _entries.push_back(entry);
 }
 

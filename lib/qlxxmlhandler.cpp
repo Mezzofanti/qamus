@@ -44,7 +44,7 @@ bool QlxXmlHandler::startElement(const QString&, const QString&, const QString& 
     if (!getXmlTag(tagString, currentTag))
     {
         ++_invalidTagDepth;
-        qDebug() << "[" << __FILE__ << "] ignoring invalid XML tag: " << tagString;
+        qWarning() << "ignoring invalid XML tag: " << tagString;
     }
 
     if (_invalidTagDepth == 0)

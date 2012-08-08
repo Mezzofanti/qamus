@@ -3,13 +3,13 @@ QT      += core xml
 QT      -= gui
 
 CONFIG(debug, debug|release) {
-    BUILD = debug 
+    BUILD = debug
 } else {
     BUILD = release
     DEFINES = QT_FATAL_WARNING QT_NO_DEBUG_OUTPUT
 }
-    
-DESTDIR     = ../$${BUILD} 
+
+DESTDIR     = ../$${BUILD}
 MOC_DIR     = $${PROJECTDIR}/$${DESTDIR}/moc
 OBJECTS_DIR = $${PROJECTDIR}/$${DESTDIR}/obj
 RCC_DIR     = $${PROJECTDIR}/$${DESTDIR}/rcc
