@@ -11,7 +11,7 @@
     #include <tre/tre.h>
 #endif
 
-
+#ifndef _WIN32
 Options::Options(const int argc, char* const argv[])
 {
     int ret = sprintf(_qamusVersion, "%d.%d.%d %s", MAJOR, MINOR, REVSN, RELEASE_NAME);
@@ -201,3 +201,4 @@ void Options::parseOptions(const int argc, char* const argv[])
         }
     }
 }
+#endif // _WIN32

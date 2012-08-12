@@ -129,10 +129,12 @@ bool QamusView::closeLexicon()
 void QamusView::startSearch(const int col, const QString &rawTerm)
 {
     _qamus.search(col, rawTerm);
+#ifndef _WIN32
     if (_options->getLogToConsole())
     {
         qDebug() << "search time: " << _qamus.getSearchDuration();
     }
+#endif // _WIN32
 }
 
 

@@ -16,6 +16,9 @@ extern bool      LogToConsole;
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
+#ifdef _WIN32
+    Options* options = nullptr;
+#else
     Options* options = new Options(argc, argv);
     if (options == nullptr)
     {
@@ -42,6 +45,7 @@ int main(int argc, char* argv[])
     LogToConsole = options->getLogToConsole();
     LogToFile = options->getLogToFile();
     LogFile = options->getLogFilename();
+#endif // _WIN32
 
     qInstallMsgHandler(Logger);
 

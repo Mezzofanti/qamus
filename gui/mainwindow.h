@@ -38,7 +38,9 @@ private:
     void setWordSort(const int col);
 
     Ui::MainWindow* ui;
+#ifndef _WIN32
     Options* _options;
+#endif // _WIN32
     QString _filename;
     QamusView _qamusView;
     QamusProxy _qamusProxy;

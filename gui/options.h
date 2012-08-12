@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+#ifdef _WIN32
+typedef void* Options;
+#else
 class Options
 {
 public:
@@ -32,5 +35,6 @@ private:
 #endif
     char _qamusVersion[MAX_VERSION_STRING_LENGTH];
 };
+#endif
 
 #endif // OPTIONS_H
