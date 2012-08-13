@@ -18,7 +18,6 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(Options* const options, QWidget* parent = 0);
     ~MainWindow();
@@ -26,9 +25,11 @@ public:
     void saveSettings();
 
 public slots:
+    void openLexicon(const QString& filename);
     void openLexicon();
     void closeLexicon();
     void searchLexicon();
+    void selectColumn(const int col);
     void updateProgress(const int percent);
     void searchFinished(SearchWorker* searchWorker);
 
@@ -41,15 +42,16 @@ private:
 #ifndef _WIN32
     Options* _options;
 #endif // _WIN32
+    int _searchCol;
     QString _filename;
     QamusView _qamusView;
     QamusProxy _qamusProxy;
     QProgressBar _progressBar;
     QSystemTrayIcon _systemTrayIcon;
 
-    const QString QLX = "qlx";
-    const QString QRX = "qrx";
-    const QString XDXF = "xdxf";
+    const QString QLX;
+    const QString QRX;
+    const QString XDXF;
 };
 
 #endif // MAINWINDOW_H

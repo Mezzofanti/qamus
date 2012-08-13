@@ -60,4 +60,5 @@ QString Entry::toString() const
     {
         output += (*it).get() + " ";
     }
+    return output;
 }

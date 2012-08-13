@@ -21,37 +21,43 @@ static void Logger(QtMsgType type, const char *msg)
         return;
     }
 
-    QString text = QDateTime::currentDateTime().toString(Qt::ISODate) + " ";
+    QString text;
     if (type == QtDebugMsg)
     {
-        text += QString("debug");
+        text = QString("DEBUG ");
     }
     else if (type == QtWarningMsg)
     {
-        text += QString("warn.");
+        text = QString("WARN  ");
     }
     else if (type == QtCriticalMsg)
     {
-        text += QString("crit.");
+        text = QString("CRIT  ");
     }
     else if (type == QtFatalMsg)
     {
-        text += QString("fatal");
+        text = QString("FATAL ");
     }
     else
     {
         return;
     }
 
-    text += ": ";
-    text += msg;
+    text = QDateTime::currentDateTime().toString(Qt::ISODate) + " " + text + msg;
 
     if (LogToFile && !LogFile.isEmpty())
     {
         QFile outFile(LogFile);
-        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-        QTextStream ts(&outFile);
-        ts << text << endl;
+        if (outFile.open(QIODevice::WriteOnly | QIODevice::Append))
+        {
+            QTextStream ts(&outFile);
+            ts << text << endl;
+        }
+        else
+        {
+            LogToFile = false;
+            qCritical() << "unable to write to log file" << LogFile;
+        }
     }
     if (LogToConsole)
     {

@@ -8,8 +8,12 @@
 MainWindow::MainWindow(Options *const options, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    _searchCol(0),
     _qamusView(options),
-    _qamusProxy(this)
+    _qamusProxy(this),
+    QLX("qlx"),
+    QRX("qrx"),
+    XDXF("xdxf")
 {
     ui->setupUi(this);
     ui->searchBox->setFocus();
@@ -46,7 +50,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon(1);
     _systemTrayIcon.showMessage("Qamus has been closed", tr("Click here to open Qamus again"), icon, 10000);
     hide();
-    //event->ignore();
     event->accept();
 }
 
@@ -65,7 +68,27 @@ void MainWindow::loadSettings()
     move(settings.value("window/position", QPoint(0, 0)).toPoint());
     restoreState(settings.value("window/properties").toByteArray());
     _filename = settings.value("file").toString();
-    _qamusView.loadLexicon(_filename);
+    openLexicon(_filename);
+}
+
+void MainWindow::openLexicon(const QString& filename)
+{
+    qDebug() << tr("opening %1").arg(filename);
+    if (_qamusView.loadLexicon(filename))
+    {
+        _filename = filename;
+        qDebug() << tr("opened %1").arg(filename);
+
+        for (int i = 0; i < _qamusView.columnCount() -1; ++i)
+        {
+            QString language = _qamusView.getLanguage(i);
+            ui->columnSelectBox->insertItem(i, QIcon(), language);
+        }
+    }
+    else
+    {
+        qCritical() << tr("failed to open %1").arg(filename);
+    }
 }
 
 void MainWindow::openLexicon()
@@ -87,32 +110,23 @@ void MainWindow::openLexicon()
                                                     tr("All Qamus lexicon files") + " (*." + QLX + ") ;; " +
                                                     tr("All XDXF files") + " (*." + XDXF + ") ;; " +
                                                     tr("All files") + " (*.*)");
-    qDebug() << "open: " + filename;
-    if (_qamusView.loadLexicon(filename))
+    if (!filename.isEmpty())
     {
-        _filename = filename;
-        //ui->lexiconView->reset();
-        //statusBar()->showMessage(tr("Lexicon loaded"), 1000);
+        openLexicon(filename);
     }
-    else
-    {
-        //statusBar()->showMessage(tr("Unable to load lexicon"));
-    }
-
-    _progressBar.hide();
 }
 
 void MainWindow::closeLexicon()
 {
     if (_qamusView.closeLexicon())
     {
+        ui->columnSelectBox->clear();
         ui->lexiconView->reset();
     }
 }
 
 void MainWindow::searchLexicon()
 {
-    int col = 0; // change
     if (_qamusView.columnCount() == 0 || _qamusView.rowCount() == 0)
     {
         ui->searchBox->clear();
@@ -122,8 +136,9 @@ void MainWindow::searchLexicon()
     QString term = ui->searchBox->text();
     if (term.isEmpty())
     {
-        _qamusView.startSearch(col, term);
-        setWordSort(col);
+        //-_qamusView.startSearch(_searchCol, term);
+        _qamusView.clearSearch();
+        setWordSort(_searchCol);
         return;
     }
     else
@@ -134,12 +149,18 @@ void MainWindow::searchLexicon()
         ui->lexiconView->setModel(&_qamusProxy);
     }
 
-    qDebug() << "begin search: " << term.toLocal8Bit().data();
+    qDebug() << tr("begin search: %1").arg(term.toLocal8Bit().data());
     _progressBar.setMaximum(_qamusView.rowCount());
     _progressBar.show();
-    SearchWorker* thread = new SearchWorker(&_qamusView, col, term, this);
+    SearchWorker* thread = new SearchWorker(&_qamusView, _searchCol, term, this);
     connect(thread, SIGNAL(searchFinished(SearchWorker*)), this, SLOT(searchFinished(SearchWorker*)));
     thread->start();
+}
+
+void MainWindow::selectColumn(const int col)
+{
+    _searchCol = col;
+    searchLexicon();
 }
 
 void MainWindow::saveSettings()
@@ -152,7 +173,6 @@ void MainWindow::saveSettings()
 }
 
 
-
 void MainWindow::updateProgress(const int percent)
 {
     _progressBar.setValue(percent);
@@ -161,8 +181,8 @@ void MainWindow::updateProgress(const int percent)
 
 void MainWindow::searchFinished(SearchWorker* searchWorker)
 {
-    qDebug() << "search completed";
+    delete searchWorker;
+    qDebug() << tr("search completed");
     _progressBar.hide();
     _qamusProxy.invalidate();
-    delete searchWorker;
 }

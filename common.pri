@@ -20,7 +20,6 @@ RESOURCES += $${IN_PWD}/resources/*.qrc
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
-QMAKE_CXXFLAGS_DEBUG   += -O2
 QMAKE_CXXFLAGS         += -std=c++0x
 
 # if ICU has not been disabled explicitly

@@ -2,7 +2,8 @@
 
 QamusView::QamusView(Options* const options, QObject* parent):
     QAbstractTableModel(parent),
-    _options(options)
+    _options(options),
+    _emptySearch(true)
 {
     connect(&_qamus, SIGNAL(progress(int)), this, SIGNAL(progress(int)));
 }
@@ -39,18 +40,44 @@ int QamusView::rowCount() const
     return _qamus.rowCount();
 }
 
+QString QamusView::getWord(const int col, const int row) const
+{
+    QMutexLocker locker(&_mutex);
+    return _qamus.word(col, row);
+}
+
+QString QamusView::getLanguage(const int col) const
+{
+    QMutexLocker locker(&_mutex);
+    if (col == _qamus.columnCount())
+    {
+        return tr("Score");
+    }
+    else
+    {
+        return _qamus.getLanguage(col);
+    }
+}
+
 QVariant QamusView::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && role == Qt::DisplayRole)
     {
-        QMutexLocker locker(&_mutex);
         if (index.column() == _qamus.columnCount())
         {
-            return QVariant(_qamus.getScore(index.row()));
+            if (_emptySearch)
+            {
+                return QVariant(MAX_SCORE);
+            }
+            else
+            {
+                QMutexLocker locker(&_mutex);
+                return QVariant(_qamus.getScore(index.row()));
+            }
         }
         else
         {
-            return QVariant(_qamus.word(index.column(), index.row()));
+            return QVariant(getWord(index.column(), index.row()));
         }
     }
     else
@@ -63,15 +90,7 @@ QVariant QamusView::headerData(int col, Qt::Orientation orientation, int role) c
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
-        QMutexLocker locker(&_mutex);
-        if (col == _qamus.columnCount())
-        {
-            return tr("Score");
-        }
-        else
-        {
-            return _qamus.getLanguage(col);
-        }
+        return QVariant(getLanguage(col));
     }
     else
     {
@@ -96,6 +115,11 @@ bool QamusView::setData(const QModelIndex &index, const QVariant &value, int rol
     {
         return false;
     }
+}
+
+void QamusView::clearSearch()
+{
+    _emptySearch = true;
 }
 
 bool QamusView::loadLexicon(const QString &filename)
@@ -128,6 +152,7 @@ bool QamusView::closeLexicon()
 
 void QamusView::startSearch(const int col, const QString &rawTerm)
 {
+    _emptySearch = false;
     _qamus.search(col, rawTerm);
 #ifndef _WIN32
     if (_options->getLogToConsole())
@@ -136,5 +161,3 @@ void QamusView::startSearch(const int col, const QString &rawTerm)
     }
 #endif // _WIN32
 }
-
-

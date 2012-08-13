@@ -31,7 +31,7 @@ Options::Options(const int argc, char* const argv[])
     _browser.assign(getenv("BROWSER"));
     _logToFile = false;
     _logToConsole = true;
-    _loglevel = 2;
+    _loglevel = -1;
     _logfile = nullptr;
     parseOptions(argc, argv);
 }

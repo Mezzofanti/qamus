@@ -240,6 +240,7 @@ void Qamus::search(const int col, QString searchTerm)
 
 qint64 Qamus::getSearchDuration() const
 {
+    Q_ASSERT(_activeCache != nullptr);
     return _activeCache->getDuration();
 }
 
