@@ -18,6 +18,8 @@ Transliterator* XmlHandler::createTransliterator(const QString& id, const QStrin
 {
     UnicodeString usId = UnicodeString::fromUTF8(id.toStdString());
     UnicodeString usRules = UnicodeString::fromUTF8(source.toStdString());
+    Q_ASSERT(usId.length() == id.length());
+    Q_ASSERT(usRules.length() == source.length());
     UParseError parseError;
     UErrorCode status;
     Transliterator* transliterator = Transliterator::createFromRules(usId, usRules, UTRANS_FORWARD, parseError, status);

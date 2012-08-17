@@ -17,6 +17,9 @@ public:
     int getCols() const;
     int getRows() const;
 
+    const QString& getAuthor() const { return _author; }
+    const QString& getDescription() const { return _description; }
+
     void setName(const QString name);
     void setAuthor(const QString author);
     void setDescription(const QString description);

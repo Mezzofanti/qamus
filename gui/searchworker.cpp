@@ -2,7 +2,7 @@
 
 #include "searchworker.h"
 
-SearchWorker::SearchWorker(QamusView* qamusView, const int col, const QString term, QObject* parent) :
+SearchWorker::SearchWorker(QamusModel* qamusView, const int col, const QString term, QObject* parent) :
     QThread(parent)
 {
     _qamusView = qamusView;

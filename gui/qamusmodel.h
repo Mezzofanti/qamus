@@ -7,12 +7,12 @@
 #include "options.h"
 #include "qamus.h"
 
-class QamusView : public QAbstractTableModel
+class QamusModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit QamusView(Options *const options, QObject* parent = 0);
-    ~QamusView();
+    explicit QamusModel(Options *const options, QObject* parent = 0);
+    ~QamusModel();
 
     int columnCount(const QModelIndex& parent) const;
     int columnCount() const;

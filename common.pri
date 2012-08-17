@@ -1,12 +1,13 @@
 CONFIG += debug_and_release
-QT      += core xml
-QT      -= gui
+QT     += core xml
+QT     -= gui
 
 CONFIG(debug, debug|release) {
     BUILD = debug
+    DEFINES += QT_DEBUG
 } else {
     BUILD = release
-    DEFINES = QT_FATAL_WARNING QT_NO_DEBUG_OUTPUT
+    DEFINES += QT_FATAL_WARNING QT_NO_DEBUG_OUTPUT
 }
 
 DESTDIR     = ../$${BUILD}
@@ -18,6 +19,8 @@ UI_DIR      = $${PROJECTDIR}/$${DESTDIR}/ui
 CODECFORTR = UTF-8
 RESOURCES += $${IN_PWD}/resources/*.qrc
 
+QMAKE_CXXFLAGS_DEBUG   -= -O2
+QMAKE_CXXFLAGS_DEBUG   += -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
 QMAKE_CXXFLAGS         += -std=c++0x

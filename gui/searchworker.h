@@ -4,13 +4,13 @@
 #include <QMutex>
 #include <QThread>
 
-#include "qamusview.h"
+#include "qamusmodel.h"
 
 class SearchWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit SearchWorker(QamusView* qamusView, const int col, const QString term, QObject* parent);
+    explicit SearchWorker(QamusModel* qamusView, const int col, const QString term, QObject* parent);
     void run();
 
 signals:
@@ -18,7 +18,7 @@ signals:
 
 private:
     int _col;
-    QamusView* _qamusView;
+    QamusModel* _qamusView;
     QString _term;
     mutable QMutex _mutex;
 };

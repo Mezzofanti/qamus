@@ -82,6 +82,40 @@ char Qamus::getScore(int row) const
     }
 }
 
+bool Qamus::getHeadRule(std::list<RuleBase*>::iterator& it)
+{
+    it = _rules.begin();
+    if (it == _rules.end())
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool Qamus::getNextRule(std::list<RuleBase*>::iterator& it)
+{
+    if (it == _rules.end())
+    {
+        return false;
+    }
+    else
+    {
+        ++it;
+
+        if (it == _rules.end())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
 bool Qamus::loadLexicon(const QString& filename)
 {
     closeLexicon();
@@ -126,17 +160,58 @@ bool Qamus::loadLexicon(const QString& filename)
         _transliterator = dictHandler->getTransliterator();
         _lexicon.applyTransliterations();
 #endif
-
-        _filename = filename;
     }
 
     delete dictHandler;
     return result;
 }
 
+bool Qamus::saveLexicon(const QString &filename) const
+{
+    QFileInfo fileInfo(filename);
+    if (!fileInfo.isFile())
+    {
+        return false;
+    }
+
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        return false;
+    }
+
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+
+    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    out << "<qamus>";
+
+    if (!_lexicon.getAuthor().isEmpty())
+    {
+        out << "<author>" << _lexicon.getAuthor() << "</author>";
+    }
+    if (!_lexicon.getDescription().isEmpty())
+    {
+        out << "<description>" << _lexicon.getDescription() << "</description>";
+    }
+#ifdef ENABLE_ICU
+    if (_transliterator != nullptr)
+    {
+        out << "<input>";
+        out << "<transliterator>";
+
+        UnicodeString us;
+        _transliterator->toRules(us, FALSE);
+    }
+#endif
+
+    out << "</qamus>";
+    file.close();
+    return true;
+}
+
 bool Qamus::closeLexicon()
 {
-    _filename.clear();
     return _lexicon.close();
 }
 
@@ -247,11 +322,9 @@ qint64 Qamus::getSearchDuration() const
 #ifdef ENABLE_ICU
 QString Qamus::transliterate(QString &term)
 {
-    UnicodeString us = UnicodeString::fromUTF8(term.toStdString());
+    UnicodeString us = QStringToUnicodeString(term);
     _transliterator->transliterate(us);
-    std::string s;
-    us.toUTF8String(s);
-    return QString::fromUtf8(s.c_str());
+    return UnicodeStringToQString(us);
  }
 #endif
 

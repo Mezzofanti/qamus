@@ -1,6 +1,6 @@
-#include "qamusview.h"
+#include "qamusmodel.h"
 
-QamusView::QamusView(Options* const options, QObject* parent):
+QamusModel::QamusModel(Options* const options, QObject* parent):
     QAbstractTableModel(parent),
     _options(options),
     _emptySearch(true)
@@ -8,16 +8,16 @@ QamusView::QamusView(Options* const options, QObject* parent):
     connect(&_qamus, SIGNAL(progress(int)), this, SIGNAL(progress(int)));
 }
 
-QamusView::~QamusView()
+QamusModel::~QamusModel()
 {
 }
 
-int QamusView::columnCount(const QModelIndex&) const
+int QamusModel::columnCount(const QModelIndex&) const
 {
     return columnCount();
 }
 
-int QamusView::columnCount() const
+int QamusModel::columnCount() const
 {
     int cols = _qamus.columnCount();
     if (cols == 0)
@@ -30,23 +30,23 @@ int QamusView::columnCount() const
     }
 }
 
-int QamusView::rowCount(const QModelIndex&) const
+int QamusModel::rowCount(const QModelIndex&) const
 {
     return rowCount();
 }
 
-int QamusView::rowCount() const
+int QamusModel::rowCount() const
 {
     return _qamus.rowCount();
 }
 
-QString QamusView::getWord(const int col, const int row) const
+QString QamusModel::getWord(const int col, const int row) const
 {
     QMutexLocker locker(&_mutex);
     return _qamus.word(col, row);
 }
 
-QString QamusView::getLanguage(const int col) const
+QString QamusModel::getLanguage(const int col) const
 {
     QMutexLocker locker(&_mutex);
     if (col == _qamus.columnCount())
@@ -59,7 +59,7 @@ QString QamusView::getLanguage(const int col) const
     }
 }
 
-QVariant QamusView::data(const QModelIndex &index, int role) const
+QVariant QamusModel::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && role == Qt::DisplayRole)
     {
@@ -86,7 +86,7 @@ QVariant QamusView::data(const QModelIndex &index, int role) const
     }
 }
 
-QVariant QamusView::headerData(int col, Qt::Orientation orientation, int role) const
+QVariant QamusModel::headerData(int col, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
@@ -98,7 +98,7 @@ QVariant QamusView::headerData(int col, Qt::Orientation orientation, int role) c
     }
 }
 
-bool QamusView::setData(const QModelIndex &index, const QVariant &value, int role)
+bool QamusModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role == Qt::DisplayRole)
     {
@@ -117,12 +117,12 @@ bool QamusView::setData(const QModelIndex &index, const QVariant &value, int rol
     }
 }
 
-void QamusView::clearSearch()
+void QamusModel::clearSearch()
 {
     _emptySearch = true;
 }
 
-bool QamusView::loadLexicon(const QString &filename)
+bool QamusModel::loadLexicon(const QString &filename)
 {
     _mutex.lock();
     bool result = _qamus.loadLexicon(filename);
@@ -136,7 +136,7 @@ bool QamusView::loadLexicon(const QString &filename)
     return result;
 }
 
-bool QamusView::closeLexicon()
+bool QamusModel::closeLexicon()
 {
     _mutex.lock();
     bool result = _qamus.closeLexicon();
@@ -150,7 +150,7 @@ bool QamusView::closeLexicon()
     return result;
 }
 
-void QamusView::startSearch(const int col, const QString &rawTerm)
+void QamusModel::startSearch(const int col, const QString &rawTerm)
 {
     _emptySearch = false;
     _qamus.search(col, rawTerm);

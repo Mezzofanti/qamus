@@ -111,7 +111,6 @@ void Lexicon::addEntry(const Entry& entry)
 void Lexicon::applyTransliterations()
 {
 #ifdef ENABLE_ICU
-
     for (int col = 0; col < getCols(); ++col)
     {
         auto transliterator = getLanguage(col).getTransliterator();

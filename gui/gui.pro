@@ -10,7 +10,8 @@ FORMS = *.ui
 
 INCLUDEPATH += ../lib
 DEPENDPATH *= $${INCLUDEPATH}
-LIBS += -L../lib/$${DESTDIR} -lqamus
+LIBS += -L$${DESTDIR} -lqamus
+PRE_TARGETDEPS += $${DESTDIR}/libqamus.a
 
 CODECFORTR = UTF-8
 TRANSLATIONS += ../translations/*.ts

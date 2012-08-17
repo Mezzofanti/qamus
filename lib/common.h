@@ -2,6 +2,8 @@
 #define COMMON_H
 
 #include <QDebug>
+#include <QString>
+#include <unicode/unistr.h>
 
 #ifdef QT_DEBUG
     #undef QT_NO_DEBUG_OUTPUT
@@ -20,5 +22,12 @@ const char INV_SCORE =  -1;
 
 const int ERROR_NONE   =   0;
 const int ERROR_MEMORY =   1;
+
+const char16_t REPLACEMENT_CHAR = u'\uFFFD';
+
+#ifdef ENABLE_ICU
+UnicodeString QStringToUnicodeString(const QString& source);
+QString UnicodeStringToQString(const UnicodeString& source);
+#endif // ENABLE_ICU
 
 #endif // COMMON_H

@@ -13,6 +13,7 @@
 #endif
 
 #include "lexicon.h"
+#include "rulebase.h"
 #include "searchcache.h"
 
 class Qamus: public QObject
@@ -31,7 +32,11 @@ public:
     bool setWord(const int col, const int row, const QString &value);
     char getScore(int row) const;
 
+    bool getHeadRule(RuleList::iterator& it);
+    bool getNextRule(RuleList::iterator& it);
+
     bool loadLexicon(const QString& filename);
+    bool saveLexicon(const QString& filename) const;
     bool closeLexicon();
     void search(const int col, QString searchTerm);
     qint64 getSearchDuration() const;
@@ -44,8 +49,9 @@ signals:
     void progress(const int);
 
 private:
-    QString _filename;
+    //QString _filename;
     Lexicon _lexicon;
+    RuleList _rules;
     SearchCache* _activeCache;
     std::list<SearchCache*> _searchCache;
 

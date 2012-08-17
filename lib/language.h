@@ -30,7 +30,6 @@ public:
     void clear();
 #ifdef ENABLE_ICU
     bool showTransliteration() const;
-    //void createTransliterator(QString rules);
     void setTransliterator(Transliterator* const transliterator);
     const Transliterator *getTransliterator() const;
 #endif

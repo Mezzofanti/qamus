@@ -7,7 +7,7 @@
 #include <QSystemTrayIcon>
 
 #include "options.h"
-#include "qamusview.h"
+#include "qamusmodel.h"
 #include "qamusproxy.h"
 #include "searchworker.h"
 
@@ -37,6 +37,7 @@ private:
     void activateSystemTray(const bool activate);
     void closeEvent(QCloseEvent* event);
     void setWordSort(const int col);
+    void keyPressEvent(QKeyEvent *event);
 
     Ui::MainWindow* ui;
 #ifndef _WIN32
@@ -44,7 +45,7 @@ private:
 #endif // _WIN32
     int _searchCol;
     QString _filename;
-    QamusView _qamusView;
+    QamusModel _qamusModel;
     QamusProxy _qamusProxy;
     QProgressBar _progressBar;
     QSystemTrayIcon _systemTrayIcon;

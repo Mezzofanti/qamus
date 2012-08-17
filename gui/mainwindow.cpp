@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QFileDialog>
 #include <QSettings>
 
@@ -9,7 +10,7 @@ MainWindow::MainWindow(Options *const options, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     _searchCol(0),
-    _qamusView(options),
+    _qamusModel(options, this),
     _qamusProxy(this),
     QLX("qlx"),
     QRX("qrx"),
@@ -20,7 +21,12 @@ MainWindow::MainWindow(Options *const options, QWidget* parent) :
     ui->searchBox->setFocusPolicy(Qt::StrongFocus);
     ui->statusBar->addPermanentWidget(&_progressBar, 0);
 
-    connect(&_qamusView, SIGNAL(progress(int)), this, SLOT(updateProgress(int)));
+    connect(&_qamusModel, SIGNAL(progress(int)), this, SLOT(updateProgress(int)));
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+    _qamusProxy.setSortRole(Qt::DisplayRole);
+    _qamusProxy.setSourceModel(&_qamusModel);
+    ui->lexiconView->setModel(&_qamusProxy);
 
     setWordSort(0);
     _progressBar.hide();
@@ -55,10 +61,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::setWordSort(const int col)
 {
-    _qamusProxy.setSortRole(Qt::DisplayRole);
     _qamusProxy.sort(col, Qt::AscendingOrder);
-    _qamusProxy.setSourceModel(&_qamusView);
-    ui->lexiconView->setModel(&_qamusProxy);
 }
 
 void MainWindow::loadSettings()
@@ -74,15 +77,22 @@ void MainWindow::loadSettings()
 void MainWindow::openLexicon(const QString& filename)
 {
     qDebug() << tr("opening %1").arg(filename);
-    if (_qamusView.loadLexicon(filename))
+    if (_qamusModel.loadLexicon(filename))
     {
         _filename = filename;
         qDebug() << tr("opened %1").arg(filename);
 
-        for (int i = 0; i < _qamusView.columnCount() -1; ++i)
+        for (int i = 0; i < _qamusModel.columnCount() -1; ++i)
         {
-            QString language = _qamusView.getLanguage(i);
+            QString language = _qamusModel.getLanguage(i);
             ui->columnSelectBox->insertItem(i, QIcon(), language);
+        }
+
+        int col = _qamusModel.columnCount() - 1;
+        ui->lexiconView->horizontalHeader()->setResizeMode(col, QHeaderView::ResizeToContents);
+        for (int i = 0; i < col; ++i)
+        {
+            ui->lexiconView->horizontalHeader()->setResizeMode(i, QHeaderView::Stretch);
         }
     }
     else
@@ -118,7 +128,7 @@ void MainWindow::openLexicon()
 
 void MainWindow::closeLexicon()
 {
-    if (_qamusView.closeLexicon())
+    if (_qamusModel.closeLexicon())
     {
         ui->columnSelectBox->clear();
         ui->lexiconView->reset();
@@ -127,7 +137,7 @@ void MainWindow::closeLexicon()
 
 void MainWindow::searchLexicon()
 {
-    if (_qamusView.columnCount() == 0 || _qamusView.rowCount() == 0)
+    if (_qamusModel.columnCount() == 0 || _qamusModel.rowCount() == 0)
     {
         ui->searchBox->clear();
         return;
@@ -136,31 +146,33 @@ void MainWindow::searchLexicon()
     QString term = ui->searchBox->text();
     if (term.isEmpty())
     {
-        //-_qamusView.startSearch(_searchCol, term);
-        _qamusView.clearSearch();
+        _qamusModel.clearSearch();
         setWordSort(_searchCol);
         return;
     }
     else
     {
         _qamusProxy.setSortRole(Qt::DisplayRole);
-        _qamusProxy.sort(_qamusView.columnCount() - 1, Qt::DescendingOrder);
-        _qamusProxy.setSourceModel(&_qamusView);
+        _qamusProxy.sort(_qamusModel.columnCount() - 1, Qt::DescendingOrder);
+        _qamusProxy.setSourceModel(&_qamusModel);
         ui->lexiconView->setModel(&_qamusProxy);
     }
 
     qDebug() << tr("begin search: %1").arg(term.toLocal8Bit().data());
-    _progressBar.setMaximum(_qamusView.rowCount());
+    _progressBar.setMaximum(_qamusModel.rowCount());
     _progressBar.show();
-    SearchWorker* thread = new SearchWorker(&_qamusView, _searchCol, term, this);
+    SearchWorker* thread = new SearchWorker(&_qamusModel, _searchCol, term, this);
     connect(thread, SIGNAL(searchFinished(SearchWorker*)), this, SLOT(searchFinished(SearchWorker*)));
     thread->start();
 }
 
 void MainWindow::selectColumn(const int col)
 {
-    _searchCol = col;
-    searchLexicon();
+    if (col >= 0 && col < _qamusModel.columnCount() - 1)
+    {
+        _searchCol = col;
+        searchLexicon();
+    }
 }
 
 void MainWindow::saveSettings()
@@ -185,4 +197,18 @@ void MainWindow::searchFinished(SearchWorker* searchWorker)
     qDebug() << tr("search completed");
     _progressBar.hide();
     _qamusProxy.invalidate();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() >= Qt::Key_F1 && event->key() <= Qt::Key_F12)
+    {
+        int col = event->key() - Qt::Key_F1;
+        selectColumn(col);
+        event->ignore();
+    }
+    else
+    {
+        event->accept();
+    }
 }

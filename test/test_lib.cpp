@@ -2,6 +2,9 @@
 
 #include "lexicon.h"
 #include "qamus.h"
+#include "log.h"
+
+extern QtMsgType LogLevel;
 
 class Test: public QObject
 {
@@ -18,6 +21,8 @@ class Test: public QObject
 void Test::init()
 {
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
+    qInstallMsgHandler(Logger);
+    LogLevel = QtFatalMsg;
 }
 
 
